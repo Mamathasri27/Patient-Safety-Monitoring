@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - Patient Safety Monitoring</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #00c6ff, #0072ff);
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Navbar */
+    nav.navbar {
+      background: #0072ff;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+    nav.navbar a {
+      color: #fff !important;
+      font-weight: 500;
+      margin-right: 20px;
+    }
+    nav.navbar a:hover { text-decoration: underline; }
+
+    /* Login Card */
+    .login-card {
+      background: #fff;
+      padding: 40px;
+      border-radius: 15px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+      width: 350px;
+      text-align: center;
+      margin: auto;
+      animation: fadeIn 1s ease;
+    }
+    .login-card h2 {
+      margin-bottom: 20px;
+      color: #0072ff;
+      font-weight: bold;
+    }
+    .form-control {
+      border-radius: 30px;
+      padding: 12px;
+    }
+    .btn-login {
+      background: #0072ff;
+      color: #fff;
+      border-radius: 30px;
+      padding: 12px;
+      font-weight: bold;
+      transition: all 0.3s ease;
+      width: 100%;
+    }
+    .btn-login:hover {
+      background: #0056b3;
+      box-shadow: 0 0 15px rgba(0,114,255,0.6);
+      transform: scale(1.05);
+    }
+    .login-card p {
+      margin-top: 15px;
+      font-size: 0.9rem;
+    }
+    .login-card a {
+      color: #0072ff;
+      text-decoration: none;
+      font-weight: 500;
+    }
+    .login-card a:hover { text-decoration: underline; }
+
+    /* Footer */
+    footer {
+      background: #0072ff;
+      color: #fff;
+      text-align: center;
+      padding: 15px;
+      font-size: 0.9rem;
+      margin-top: auto;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Message styling */
+    #loginMessage {
+      margin-top: 15px;
+      font-weight: bold;
+      display: none;
+    }
+    #loginMessage.success { color: green; }
+    #loginMessage.error { color: red; }
+  </style>
+</head>
+<body>
+  <!-- Navigation Bar -->
+  <nav class="navbar navbar-expand-lg">
+    <div class="container">
+      <a class="navbar-brand text-white fw-bold" href="/">Patient Safety AI</a>
+      <div class="collapse navbar-collapse">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="/signup">Sign Up</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Login Card -->
+  <div class="login-card">
+    <h2>Login</h2>
+    <form id="loginForm" action="/login" method="POST">
+      <input type="email" name="email" class="form-control mb-3" placeholder="Email" required>
+      <input type="password" name="password" class="form-control mb-3" placeholder="Password" required>
+      <button type="submit" class="btn btn-login">Login</button>
+    </form>
+    <p>Don't have an account? <a href="/signup">Sign Up</a></p>
+    <div id="loginMessage"></div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <p>&copy; 2025 Patient Safety AI | Built with Flask + MediaPipe + Twilio</p>
+  </footer>
+
+  <!-- JavaScript -->
+  <script>
+    const form = document.getElementById("loginForm");
+    const msg = document.getElementById("loginMessage");
+
+    form.addEventListener("submit", async function(event) {
+      event.preventDefault(); // prevent default form submission
+
+      const formData = new FormData(form);
+
+      try {
+        const response = await fetch("/login", {
+          method: "POST",
+          body: formData
+        });
+
+        if (response.ok) {
+          msg.textContent = "✅ Login successful, redirecting...";
+          msg.className = "success";
+          msg.style.display = "block";
+          setTimeout(() => {
+            window.location.href = "/upload"; // redirect to upload page
+          }, 1500);
+        } else {
+          const data = await response.json();
+          msg.textContent = "❌ " + (data.error || "Invalid credentials");
+          msg.className = "error";
+          msg.style.display = "block";
+        }
+      } catch (error) {
+        msg.textContent = "❌ Server error. Please try again.";
+        msg.className = "error";
+        msg.style.display = "block";
+        console.error("[Login Error]", error);
+      }
+    });
+  </script>
+</body>
+</html>

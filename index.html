@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Patient Safety Monitoring</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #fdfbfb, #ebedee);
+      color: #333;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* Navigation Bar */
+    nav.navbar {
+      background: #0072ff;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+    nav.navbar a {
+      color: #fff !important;
+      font-weight: 500;
+      margin-right: 20px;
+    }
+    nav.navbar a:hover { text-decoration: underline; }
+
+    /* Hero Section */
+    header.hero {
+      background: linear-gradient(135deg, #00c6ff, #0072ff);
+      color: white;
+      padding: 100px 20px;
+      text-align: center;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    }
+    header.hero h1 {
+      font-size: 3rem;
+      font-weight: 700;
+      text-shadow: 2px 2px 8px rgba(0,0,0,0.3);
+    }
+    header.hero p {
+      font-size: 1.3rem;
+      margin-top: 15px;
+      opacity: 0.9;
+    }
+    .btn-glow {
+      background: #fff;
+      color: #0072ff;
+      font-weight: bold;
+      border-radius: 30px;
+      padding: 12px 30px;
+      transition: all 0.3s ease;
+      box-shadow: 0 0 15px rgba(255,255,255,0.6);
+    }
+    .btn-glow:hover {
+      background: #0072ff;
+      color: #fff;
+      box-shadow: 0 0 25px rgba(0,114,255,0.8);
+      transform: scale(1.05);
+    }
+
+    /* Features Section */
+    .features {
+      padding: 80px 20px;
+      text-align: center;
+    }
+    .features h2 {
+      font-size: 2rem;
+      font-weight: bold;
+      margin-bottom: 40px;
+      color: #0072ff;
+    }
+    .features .card {
+      border: none;
+      border-radius: 15px;
+      background: #fff;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .features .card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 12px 30px rgba(0,114,255,0.3);
+    }
+
+    /* About Section */
+    .about {
+      padding: 80px 20px;
+      background: #f8f9fa;
+      text-align: center;
+    }
+    .about h2 {
+      font-size: 2rem;
+      font-weight: bold;
+      margin-bottom: 20px;
+      color: #0072ff;
+    }
+    .about p.lead {
+      max-width: 800px;
+      margin: 0 auto 20px auto;
+      font-size: 1.1rem;
+      line-height: 1.6;
+    }
+    .about .list {
+      max-width: 800px;
+      margin: 0 auto;
+      text-align: left;
+    }
+    .about .list li {
+      margin-bottom: 10px;
+      font-size: 1.05rem;
+    }
+
+    /* Footer */
+    footer {
+      background: #0072ff;
+      color: #fff;
+      text-align: center;
+      padding: 20px;
+      margin-top: 50px;
+      font-size: 0.9rem;
+      position: relative;
+    }
+    .footer-arrow {
+      position: absolute;
+      right: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: #fff;
+      color: #0072ff;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      line-height: 40px;
+      text-align: center;
+      font-size: 20px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .footer-arrow:hover {
+      background: #0056b3;
+      color: #fff;
+      box-shadow: 0 0 15px rgba(255,255,255,0.6);
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation Bar -->
+  <nav class="navbar navbar-expand-lg">
+    <div class="container">
+      <a class="navbar-brand text-white fw-bold" href="/">Patient Safety AI</a>
+      <div class="collapse navbar-collapse">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link" href="#features">Features</a></li>
+          <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
+          <li class="nav-item"><a class="nav-link" href="/login">Login</a></li>
+          <li class="nav-item"><a class="nav-link" href="/signup">Sign Up</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <header class="hero">
+    <h1>AI-Powered Patient Safety Monitoring</h1>
+    <p>Bright, professional, and reliable — keeping patients safe with AI alerts.</p>
+    <a href="/login" class="btn btn-glow btn-lg mt-4">Get Started</a>
+  </header>
+
+  <!-- Features Section -->
+  <section class="features" id="features">
+    <div class="container">
+      <h2>Features</h2>
+      <div class="row g-4">
+        <div class="col-md-4">
+          <div class="card p-4">
+            <h4>📹 Video Upload</h4>
+            <p>Upload patient activity videos securely for analysis.</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card p-4">
+            <h4>⚠️ Risk Detection</h4>
+            <p>AI detects falls, distress, and summarizes risks instantly.</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card p-4">
+            <h4>📲 Instant Alerts</h4>
+            <p>Get SMS + sound notifications in real time.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- About Section -->
+  <section class="about" id="about">
+    <div class="container">
+      <h2>About Us</h2>
+      <p class="lead">
+        Patient Safety AI enhances healthcare monitoring through computer vision and real‑time alerts.
+        The system analyzes patient activity videos to detect falls, distress, or unusual behavior, and
+        instantly notifies staff via SMS and dashboard messages. Built with Flask, MediaPipe, and Twilio,
+        it balances technical reliability with a professional, accessible design.
+      </p>
+      <ul class="list list-unstyled">
+        <li>📹 <strong>Video uploads:</strong> Securely upload patient activity recordings for automated analysis.</li>
+        <li>⚠️ <strong>Risk detection:</strong> Detect falls, distress, or unusual behavior using pose estimation and facial landmarks.</li>
+        <li>📲 <strong>Instant alerts:</strong> Notify healthcare staff immediately via SMS and dashboard messages when risks are detected.</li>
+        <li>🔒 <strong>Reliability & security:</strong> Scalable backend architecture, safe credential handling, and professional UI.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <p>&copy; 2025 Patient Safety AI | Built with Flask + MediaPipe + Twilio</p>
+    <div class="footer-arrow" id="scrollTopBtn">&#8593;</div>
+  </footer>
+
+  <!-- JavaScript -->
+  <script>
+    // Animate cards on load
+    window.addEventListener("load", () => {
+      const cards = document.querySelectorAll(".features .card");
+      cards.forEach((card, index) => {
+        card.style.opacity = "0";
+        card.style.transform = "translateY(30px)";
+        setTimeout(() => {
+          card.style.transition = "all 0.6s ease";
+          card.style.opacity = "1";
+          card.style.transform = "translateY(0)";
+        }, index * 200);
+      });
+    });
+
+    // Scroll to top when footer arrow clicked
+    document.getElementById("scrollTopBtn").addEventListener("click", () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  </script>
+</body>
+</html>

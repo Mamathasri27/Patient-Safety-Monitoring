@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Patient Safety Monitoring</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6f9;
+      text-align: center;
+      padding: 40px;
+    }
+    h1 { color: #333; }
+    .upload-box {
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      display: inline-block;
+    }
+    input[type="file"] { margin: 10px 0; }
+    button {
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button:hover { background: #0056b3; }
+    .results {
+      margin-top: 20px;
+      text-align: left;
+      display: inline-block;
+      width: 400px;
+    }
+    .card {
+      background: #e9ecef;
+      margin: 5px 0;
+      padding: 12px;
+      border-radius: 6px;
+    }
+    .event { font-weight: bold; font-size: 18px; margin-bottom: 8px; }
+    .risk { color: orange; margin-bottom: 6px; }
+    .precaution { color: green; }
+    .loading { color: #007bff; font-weight: bold; margin-top: 15px; }
+    .error { color: red; font-weight: bold; margin-top: 10px; }
+    .success { color: green; font-weight: bold; margin-top: 10px; }
+  </style>
+</head>
+<body>
+  <h1>Patient Safety Monitoring</h1>
+  <div class="upload-box">
+    <form id="uploadForm" enctype="multipart/form-data">
+      <input type="file" name="video" accept="video/*" required>
+      <br>
+      <button type="submit">Upload Video</button>
+    </form>
+    <div class="loading" id="loading"></div>
+    <div class="results" id="results"></div>
+  </div>
+
+  <script>
+    const form = document.getElementById("uploadForm");
+    const resultsDiv = document.getElementById("results");
+    const loadingDiv = document.getElementById("loading");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const formData = new FormData(form);
+
+      // Show loading message
+      loadingDiv.textContent = "Processing video... please wait.";
+      resultsDiv.innerHTML = "";
+
+      try {
+        const response = await fetch("/predict", {
+          method: "POST",
+          body: formData
+        });
+
+        const data = await response.json();
+        loadingDiv.textContent = "";
+
+        if (data.error) {
+          resultsDiv.innerHTML = `<p class="error">❌ ${data.error}</p>`;
+        } else {
+          resultsDiv.innerHTML = `
+            <div class="card">
+              <div class="event">${data.event}</div>
+              <div class="risk">🔶 Risk: ${data.risk}</div>
+              <div class="precaution">✅ Precaution: ${data.precaution}</div>
+              <p class="success">✅ Upload successful!</p>
+            </div>
+          `;
+        }
+      } catch (error) {
+        loadingDiv.textContent = "";
+        resultsDiv.innerHTML = "<p class='error'>❌ Server error. Please try again.</p>";
+        console.error("[Upload Error]", error);
+      }
+    });
+  </script>
+</body>
+</html>
