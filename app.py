@@ -44,52 +44,58 @@ def analyze_video(video_path):
         condition = None
 
         # Pose detection
-        pose_results = pose.process(rgb)
-        if pose_results.pose_landmarks:
-            landmarks = pose_results.pose_landmarks.landmark
-            hip_y = landmarks[mp_pose.PoseLandmark.LEFT_HIP].y
-            shoulder_y = landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER].y
-            nose_y = landmarks[mp_pose.PoseLandmark.NOSE].y
+        try:
+            pose_results = pose.process(rgb)
+            if pose_results.pose_landmarks:
+                landmarks = pose_results.pose_landmarks.landmark
+                hip_y = landmarks[mp_pose.PoseLandmark.LEFT_HIP].y
+                shoulder_y = landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER].y
+                nose_y = landmarks[mp_pose.PoseLandmark.NOSE].y
 
-            if hip_y < shoulder_y and nose_y > shoulder_y:
-                condition = {
-                    "event": "⚠️ Falling backward",
-                    "risk": "High risk of head/back injury",
-                    "precaution": "Check consciousness, support head/neck, call medical help"
-                }
-            elif hip_y < shoulder_y and nose_y < shoulder_y:
-                condition = {
-                    "event": "⚠️ Falling forward",
-                    "risk": "Risk of facial injury or broken arms",
-                    "precaution": "Ensure airway clear, stop bleeding, seek medical evaluation"
-                }
+                if hip_y < shoulder_y and nose_y > shoulder_y:
+                    condition = {
+                        "event": "⚠️ Falling backward",
+                        "risk": "High risk of head/back injury",
+                        "precaution": "Check consciousness, support head/neck, call medical help"
+                    }
+                elif hip_y < shoulder_y and nose_y < shoulder_y:
+                    condition = {
+                        "event": "⚠️ Falling forward",
+                        "risk": "Risk of facial injury or broken arms",
+                        "precaution": "Ensure airway clear, stop bleeding, seek medical evaluation"
+                    }
 
-            angle = get_angle(
-                landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER],
-                landmarks[mp_pose.PoseLandmark.LEFT_HIP],
-                landmarks[mp_pose.PoseLandmark.LEFT_KNEE]
-            )
-            if angle < 120:
-                condition = {
-                    "event": "⚠️ Falling down",
-                    "risk": "Possible fracture or trauma",
-                    "precaution": "Do not move patient, call emergency services"
-                }
+                angle = get_angle(
+                    landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER],
+                    landmarks[mp_pose.PoseLandmark.LEFT_HIP],
+                    landmarks[mp_pose.PoseLandmark.LEFT_KNEE]
+                )
+                if angle < 120:
+                    condition = {
+                        "event": "⚠️ Falling down",
+                        "risk": "Possible fracture or trauma",
+                        "precaution": "Do not move patient, call emergency services"
+                    }
+        except Exception as e:
+            print(f"[ERROR] Pose processing failed: {e}")
 
         # Face detection
-        face_results = face_mesh.process(rgb)
-        if face_results.multi_face_landmarks:
-            for face_landmarks in face_results.multi_face_landmarks:
-                top_lip = face_landmarks.landmark[13].y
-                bottom_lip = face_landmarks.landmark[14].y
-                mouth_open = abs(bottom_lip - top_lip)
+        try:
+            face_results = face_mesh.process(rgb)
+            if face_results.multi_face_landmarks:
+                for face_landmarks in face_results.multi_face_landmarks:
+                    top_lip = face_landmarks.landmark[13].y
+                    bottom_lip = face_landmarks.landmark[14].y
+                    mouth_open = abs(bottom_lip - top_lip)
 
-                if mouth_open > 0.03:
-                    condition = {
-                        "event": "😡 Distress/anger detected",
-                        "risk": "Emotional stress, possible breathing difficulty",
-                        "precaution": "Calm patient, ensure safe environment, monitor breathing"
-                    }
+                    if mouth_open > 0.03:
+                        condition = {
+                            "event": "😡 Distress/anger detected",
+                            "risk": "Emotional stress, possible breathing difficulty",
+                            "precaution": "Calm patient, ensure safe environment, monitor breathing"
+                        }
+        except Exception as e:
+            print(f"[ERROR] FaceMesh processing failed: {e}")
 
         if condition:
             predictions.append(condition)
@@ -158,7 +164,8 @@ def predict():
         os.makedirs("uploads", exist_ok=True)
         video_path = os.path.join("uploads", video.filename)
         video.save(video_path)
-        print(f"[INFO] Video saved to {video_path}")
+        print(f"[DEBUG] Video saved to {video_path}")
+        print(f"[DEBUG] File size: {os.path.getsize(video_path)} bytes")
 
         if not os.path.exists(video_path):
             print("[ERROR] File not found after saving")
