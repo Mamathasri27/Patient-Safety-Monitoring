@@ -4,12 +4,9 @@ import mediapipe as mp
 import os
 from collections import Counter
 import math
-from twilio.rest import Client   # Twilio for SMS
 
 app = Flask(__name__)
-
-# Allow larger video uploads (100MB)
-app.config['MAX_CONTENT_LENGTH'] = 100 * 1024 * 1024  
+app.config['MAX_CONTENT_LENGTH'] = 100 * 1024 * 1024  # Allow up to 100MB uploads
 
 # Initialize MediaPipe models
 mp_pose = mp.solutions.pose
@@ -17,28 +14,13 @@ pose = mp_pose.Pose(static_image_mode=False)
 mp_face = mp.solutions.face_mesh
 face_mesh = mp_face.FaceMesh(static_image_mode=False, max_num_faces=1, refine_landmarks=True)
 
-# Load Twilio credentials securely
-TWILIO_SID = os.environ.get("TWILIO_SID")
-TWILIO_AUTH_TOKEN = os.environ.get("TWILIO_AUTH_TOKEN")
-TWILIO_PHONE = os.environ.get("TWILIO_PHONE")
-STAFF_PHONE = os.environ.get("STAFF_PHONE")
-
-# Helper function to send SMS
-def send_sms(event, risk, precaution):
-    try:
-        client = Client(TWILIO_SID, TWILIO_AUTH_TOKEN)
-        body = f"{event}\nRisk: {risk}\nPrecaution: {precaution}"
-        client.messages.create(body=body, from_=TWILIO_PHONE, to=STAFF_PHONE)
-        print(f"[INFO] SMS sent to {STAFF_PHONE}")
-    except Exception as e:
-        print(f"[ERROR] Failed to send SMS: {e}")
-
 # Helper function to calculate angle
 def get_angle(a, b, c):
     ang = math.degrees(math.atan2(c.y - b.y, c.x - b.x) -
                        math.atan2(a.y - b.y, a.x - b.x))
     return abs(ang)
 
+# Analyze video frames
 def analyze_video(video_path):
     cap = cv2.VideoCapture(video_path)
     predictions = []
@@ -59,14 +41,12 @@ def analyze_video(video_path):
 
         frame_count += 1
         rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-
         condition = None
 
-        # Pose prediction
+        # Pose detection
         pose_results = pose.process(rgb)
         if pose_results.pose_landmarks:
             landmarks = pose_results.pose_landmarks.landmark
-
             hip_y = landmarks[mp_pose.PoseLandmark.LEFT_HIP].y
             shoulder_y = landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER].y
             nose_y = landmarks[mp_pose.PoseLandmark.NOSE].y
@@ -84,7 +64,6 @@ def analyze_video(video_path):
                     "precaution": "Ensure airway clear, stop bleeding, seek medical evaluation"
                 }
 
-            # Torso angle check
             angle = get_angle(
                 landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER],
                 landmarks[mp_pose.PoseLandmark.LEFT_HIP],
@@ -97,7 +76,7 @@ def analyze_video(video_path):
                     "precaution": "Do not move patient, call emergency services"
                 }
 
-        # Face prediction
+        # Face detection
         face_results = face_mesh.process(rgb)
         if face_results.multi_face_landmarks:
             for face_landmarks in face_results.multi_face_landmarks:
@@ -130,12 +109,11 @@ def analyze_video(video_path):
             "precaution": "Continue monitoring"
         }
 
-# ✅ Root route (Dashboard)
+# Routes
 @app.route('/')
 def index():
     return render_template('index.html')
 
-# ✅ Login page
 @app.route('/login')
 def login():
     return render_template('login.html')
@@ -149,7 +127,6 @@ def login_post():
     else:
         return jsonify({"error": "Invalid credentials"}), 401
 
-# ✅ Signup page
 @app.route('/signup')
 def signup():
     return render_template('signup.html')
@@ -162,12 +139,10 @@ def signup_post():
     print(f"[INFO] New user registered: {username}, Email: {email}")
     return redirect(url_for('upload'))
 
-# ✅ Upload page
 @app.route('/upload')
 def upload():
     return render_template('upload.html')
 
-# ✅ Prediction route
 @app.route('/predict', methods=['POST'])
 def predict():
     try:
@@ -195,10 +170,6 @@ def predict():
 
         prediction = analyze_video(video_path)
         print(f"[INFO] Prediction generated: {prediction}")
-
-        if prediction.get("event") and prediction["event"] != "No event detected":
-            send_sms(prediction["event"], prediction["risk"], prediction["precaution"])
-
         return jsonify(prediction)
 
     except Exception as e:
