@@ -3,4 +3,6 @@ gunicorn
 scikit-learn
 numpy
 pandas
-joblib
+
+joblib 
+opencv-python-headless
